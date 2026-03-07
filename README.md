@@ -34,11 +34,48 @@ Build args (optional):
 
 - `KASM_VERSION` – default `1.18.0`; use the rolling tag for the base image if desired (e.g. `1.18.0-rolling-daily`).
 
+## Push to Harbor
+
+Build and push images to your [Harbor](https://goharbor.io/) registry so Kasm (or any host) can pull them.
+
+1. **Create a project in Harbor** (if needed): In the Harbor UI, create a project (e.g. `kasm`) and set it to **Private** or **Public** as you prefer.
+
+2. **Log in to Harbor** from the machine where you build:
+
+   ```bash
+   docker login harbor.example.com
+   ```
+   Use your Harbor username and password (or robot account credentials).
+
+3. **Build and tag for Harbor** (replace `harbor.example.com` and `kasm` with your Harbor host and project):
+
+   ```bash
+   export HARBOR=harbor.example.com
+   export PROJECT=kasm
+   export TAG=1.18.0
+
+   docker build -t ${HARBOR}/${PROJECT}/archlinux-kasm:${TAG} -f archlinux/Dockerfile archlinux/
+   docker build -t ${HARBOR}/${PROJECT}/cachyos-kasm:${TAG} -f cachyos/Dockerfile cachyos/
+   docker build -t ${HARBOR}/${PROJECT}/bazzite-kasm:${TAG} -f bazzite/Dockerfile bazzite/
+   ```
+
+4. **Push to Harbor**:
+
+   ```bash
+   docker push ${HARBOR}/${PROJECT}/archlinux-kasm:${TAG}
+   docker push ${HARBOR}/${PROJECT}/cachyos-kasm:${TAG}
+   docker push ${HARBOR}/${PROJECT}/bazzite-kasm:${TAG}
+   ```
+
+   If Harbor uses HTTPS with a self-signed certificate, ensure the Docker daemon trusts it (e.g. add the CA to the host’s trust store or configure Docker’s `insecure-registries` / `registry-config` as needed).
+
+5. **Use in Kasm**: When adding the workspace, set **Image** to e.g. `harbor.example.com/kasm/archlinux-kasm:1.18.0`. For a private project, set **Docker Registry Username** and **Docker Registry Password** to your Harbor user (or robot account) so the Kasm agent can pull.
+
 ## Add to Kasm
 
-1. Push images to a registry Docker can pull from (Docker Hub, GHCR, or your own).
+1. Push images to a registry Docker can pull from (e.g. [Harbor](#push-to-harbor), Docker Hub, GHCR).
 2. In Kasm: **Admin** → **Workspaces** → **Add Workspace**.
-3. Set **Image** to the full image name and tag (e.g. `ghcr.io/myorg/archlinux-kasm:1.18.0`).
+3. Set **Image** to the full image name and tag (e.g. `harbor.example.com/kasm/archlinux-kasm:1.18.0` or `ghcr.io/myorg/archlinux-kasm:1.18.0`).
 4. If the registry is private, set **Docker Registry Username** and **Docker Registry Password**.
 5. Configure CPU/memory, zone, and which groups can use the workspace. Save.
 6. On the agent, pull the image (or let Kasm install it):  
