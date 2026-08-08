@@ -54,17 +54,17 @@ Build and push images to your [Harbor](https://goharbor.io/) registry so Kasm (o
    export PROJECT=kasm
    export TAG=1.18.0
 
-   docker build -t ${HARBOR}/${PROJECT}/archlinux-kasm:${TAG} -f archlinux/Dockerfile archlinux/
-   docker build -t ${HARBOR}/${PROJECT}/cachyos-kasm:${TAG} -f cachyos/Dockerfile cachyos/
-   docker build -t ${HARBOR}/${PROJECT}/bazzite-kasm:${TAG} -f bazzite/Dockerfile bazzite/
+   docker build -t $HARBOR/$PROJECT/archlinux-kasm:$TAG -f archlinux/Dockerfile archlinux/
+   docker build -t $HARBOR/$PROJECT/cachyos-kasm:$TAG -f cachyos/Dockerfile cachyos/
+   docker build -t $HARBOR/$PROJECT/bazzite-kasm:$TAG -f bazzite/Dockerfile bazzite/
    ```
 
 4. **Push to Harbor**:
 
    ```bash
-   docker push ${HARBOR}/${PROJECT}/archlinux-kasm:${TAG}
-   docker push ${HARBOR}/${PROJECT}/cachyos-kasm:${TAG}
-   docker push ${HARBOR}/${PROJECT}/bazzite-kasm:${TAG}
+   docker push $HARBOR/$PROJECT/archlinux-kasm:$TAG
+   docker push $HARBOR/$PROJECT/cachyos-kasm:$TAG
+   docker push $HARBOR/$PROJECT/bazzite-kasm:$TAG
    ```
 
    If Harbor uses HTTPS with a self-signed certificate, ensure the Docker daemon trusts it (e.g. add the CA to the host’s trust store or configure Docker’s `insecure-registries` / `registry-config` as needed).
