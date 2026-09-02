@@ -86,3 +86,7 @@ Build and push images to your [Harbor](https://goharbor.io/) registry so Kasm (o
 - **CachyOS**: Uses CachyOS repos for optimized packages; the image is larger and build can take longer.
 - **Bazzite**: This image is a Fedora-based “gaming-style” workspace (e.g. GNOME, common gaming libs). The real [Bazzite](https://bazzite.com/) OS is an immutable Fedora Atomic distro and is not a drop-in Kasm workspace; this Dockerfile approximates a similar environment inside Kasm.
 - **LinuxServer bases**: Tags like `arch`, `fedora41` track upstream. Check [releases](https://github.com/linuxserver/docker-baseimage-kasmvnc/releases) for current tags.
+
+### Git hooks
+
+Run `bash scripts/install-git-hooks` once per clone. The pre-commit hook runs fast staged checks; pre-push runs the broader local CI gate.

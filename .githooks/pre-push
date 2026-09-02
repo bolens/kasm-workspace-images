@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+hadolint --failure-threshold error -- */Dockerfile
+shellcheck -- */root/defaults/startwm.sh
+for image in archlinux bazzite cachyos; do
+  docker buildx build --check --file "$image/Dockerfile" "$image"
+done
+actionlint
+zizmor --offline --min-severity medium --min-confidence medium .github
