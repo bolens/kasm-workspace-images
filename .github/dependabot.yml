@@ -9,6 +9,8 @@ updates:
       github-actions:
         patterns:
           - '*'
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: docker
     directories:
@@ -21,3 +23,5 @@ updates:
       docker-images:
         patterns:
           - '*'
+    cooldown:
+      default-days: 7
