@@ -12,6 +12,19 @@ credentials through build arguments or persist them in layers. Run repository
 hooks and CI-equivalent lint, then build or validate each changed image and run
 a representative smoke test when the environment supports it.
 
+## Push
+
+Follow the [fleet push and merge steps](https://github.com/bolens/.github/blob/main/RELEASING.md#push-and-merge).
+After the local checks pass, inspect the diff, commit focused changes, and push
+only the feature branch to the GitHub remote:
+
+```sh
+git push --set-upstream origin HEAD
+```
+
+Confirm `origin` points to `bolens/kasm-workspace-images` on GitHub before pushing.
+Do not push `main`, force-push, skip failing hooks, or bypass protection.
+
 ## Review, publish, and verify
 
 Require a pull request, all checks, resolved conversations, and a squash merge.
