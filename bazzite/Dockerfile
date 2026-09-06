@@ -1,7 +1,6 @@
 # Bazzite-style (Fedora gaming) desktop for Kasm Workspaces
 # Base: LinuxServer baseimage-kasmvnc (Fedora 41). Not the immutable Bazzite OS;
 # this is a Fedora-based gaming-style workspace with GNOME.
-ARG KASM_VERSION=1.18.0
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:fedora41
 
 USER root

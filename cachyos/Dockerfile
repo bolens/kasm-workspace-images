@@ -1,6 +1,5 @@
 # CachyOS (Arch + optimized repos) desktop for Kasm Workspaces
 # Base: LinuxServer baseimage-kasmvnc (Arch), then add CachyOS repos
-ARG KASM_VERSION=1.18.0
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:arch
 
 USER root
