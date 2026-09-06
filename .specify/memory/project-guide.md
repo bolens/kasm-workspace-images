@@ -30,7 +30,7 @@ and image metadata without embedding credentials in build arguments or layers.
 
 ```sh
 hadolint --failure-threshold error -- */Dockerfile
-shellcheck -- */root/defaults/startwm.sh
+shellcheck -- */root/defaults/startwm.sh bazzite/root/custom-services.d/dbus scripts/smoke-image
 ```
 
 Use the existing pre-push workflow for Buildx checks when the builder is available.
