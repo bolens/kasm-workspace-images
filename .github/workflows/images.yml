@@ -1,0 +1,108 @@
+name: Workspace images
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/images.yml'
+      - 'archlinux/**'
+      - 'bazzite/**'
+      - 'cachyos/**'
+      - 'scripts/smoke-image'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workspace-images-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build workspace (${{ matrix.image }})
+    if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [archlinux, bazzite, cachyos]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - name: Build workspace
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: ${{ matrix.image }}
+          file: ${{ matrix.image }}/Dockerfile
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: localhost/kasm-smoke:${{ matrix.image }}
+          cache-from: type=gha,scope=workspace-${{ matrix.image }}
+      - name: Verify desktop startup
+        env:
+          VARIANT: ${{ matrix.image }}
+        run: bash scripts/smoke-image "localhost/kasm-smoke:$VARIANT" "$VARIANT"
+
+  publish:
+    name: Publish workspace (${{ matrix.image }})
+    if: >-
+      github.repository == 'bolens/kasm-workspace-images' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [archlinux, bazzite, cachyos]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - name: Authenticate to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish workspace
+        id: image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: ${{ matrix.image }}
+          file: ${{ matrix.image }}/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/bolens/kasm-workspace-images/${{ matrix.image }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/bolens/kasm-workspace-images
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha,scope=workspace-${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=workspace-${{ matrix.image }}
+          provenance: mode=max
+          sbom: true
+      - name: Verify published desktop and promote latest
+        env:
+          IMAGE: ghcr.io/bolens/kasm-workspace-images/${{ matrix.image }}
+          DIGEST: ${{ steps.image.outputs.digest }}
+          VARIANT: ${{ matrix.image }}
+        run: |
+          docker pull "$IMAGE@$DIGEST"
+          bash scripts/smoke-image "$IMAGE@$DIGEST" "$VARIANT"
+          docker buildx imagetools create --tag "$IMAGE:latest" "$IMAGE@$DIGEST"
+      - name: Record published digest
+        env:
+          IMAGE: ghcr.io/bolens/kasm-workspace-images/${{ matrix.image }}
+          DIGEST: ${{ steps.image.outputs.digest }}
+        run: printf 'Published %s@%s\n' "$IMAGE" "$DIGEST" >> "$GITHUB_STEP_SUMMARY"

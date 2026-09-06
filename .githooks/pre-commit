@@ -9,7 +9,7 @@ mapfile -t dockerfiles < <(git diff --cached --name-only --diff-filter=ACMR -- '
 if ((${#dockerfiles[@]})); then
   hadolint --failure-threshold error "${dockerfiles[@]}"
 fi
-mapfile -t shell_files < <(git diff --cached --name-only --diff-filter=ACMR -- '*/root/defaults/startwm.sh')
+mapfile -t shell_files < <(git diff --cached --name-only --diff-filter=ACMR -- '*/root/defaults/startwm.sh' 'bazzite/root/custom-services.d/dbus' 'scripts/smoke-image')
 if ((${#shell_files[@]})); then
   shellcheck "${shell_files[@]}"
 fi

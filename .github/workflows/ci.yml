@@ -64,4 +64,4 @@ jobs:
           persist-credentials: false
 
       - name: Check startup scripts
-        run: shellcheck -- */root/defaults/startwm.sh
+        run: shellcheck -- */root/defaults/startwm.sh bazzite/root/custom-services.d/dbus scripts/smoke-image
