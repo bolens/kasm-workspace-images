@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (($# != 2)); then
+  echo "Usage: $0 IMAGE VARIANT" >&2
+  exit 2
+fi
+image=$1
+case "$2" in
+  archlinux|cachyos) desktop=xfce4-session ;;
+  bazzite) desktop=gnome-shell ;;
+  *) echo "Unknown workspace variant: $2" >&2; exit 2 ;;
+esac
+engine=${CONTAINER_ENGINE:-docker}
+# Detect native Node ABI drift before starting Kasm's audio service.
+"$engine" run --rm --network=none --entrypoint node "$image" \
+  -e "require('/kclient/node_modules/pulseaudio2')"
+container=$("$engine" run --detach --network=none "$image")
+trap '"$engine" rm --force --volumes "$container" >/dev/null' EXIT
+
+# Require a desktop process to survive five consecutive readiness checks.
+stable=0
+deadline=$((SECONDS + 60))
+while ((SECONDS < deadline)); do
+  if "$engine" exec "$container" pgrep --exact "$desktop" >/dev/null 2>&1; then
+    stable=$((stable + 1))
+    if ((stable == 5)); then
+      printf '%s started successfully in %s\n' "$desktop" "$image"
+      exit 0
+    fi
+  else
+    stable=0
+  fi
+  sleep 1
+done
+"$engine" logs --tail 100 "$container" >&2
+echo "Workspace desktop did not remain ready: $desktop" >&2
+exit 1
