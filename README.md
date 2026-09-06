@@ -14,7 +14,9 @@ Custom workspace images for [Kasm Workspaces](https://www.kasmweb.com/) (browser
 
 ## Build
 
-Build on a host with Docker (no need to build inside Kasm). Use the same tag as your Kasm version where possible (e.g. `1.18.0`).
+Build on a host with Docker (no need to build inside Kasm). Choose an output
+tag for your registry. The example `1.18.0` tag labels the resulting image; it
+does not select a base image or establish compatibility with a Kasm release.
 
 ```bash
 git clone https://github.com/bolens/kasm-workspace-images.git
@@ -30,9 +32,9 @@ docker build -t myregistry/cachyos-kasm:1.18.0 -f cachyos/Dockerfile cachyos/
 docker build -t myregistry/bazzite-kasm:1.18.0 -f bazzite/Dockerfile bazzite/
 ```
 
-Build args (optional):
-
-- `KASM_VERSION` – default `1.18.0`; use the rolling tag for the base image if desired (e.g. `1.18.0-rolling-daily`).
+The Dockerfiles use the LinuxServer base tags shown in the Images table.
+There is no `KASM_VERSION` build argument. Change the relevant `FROM` declaration
+and validate that build context when selecting a different base.
 
 ## Push to Harbor
 
