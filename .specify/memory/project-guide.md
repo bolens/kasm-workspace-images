@@ -1,5 +1,7 @@
 # kasm-workspace-images Spec Kit project guide
 
+[Documentation](../../docs/README.md)
+
 Arch Linux, Bazzite, and CachyOS workspace image definitions for Kasm.
 
 Read this guide with `AGENTS.md` and `.specify/memory/constitution.md` before

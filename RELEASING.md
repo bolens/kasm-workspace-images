@@ -1,5 +1,7 @@
 # Image delivery playbook
 
+[Documentation](docs/README.md)
+
 Kasm Workspace Images continuously delivers Dockerfiles and workspace metadata
 from protected `main`. Image publication is a separate authorized operation;
 there are no GitHub version tags.
