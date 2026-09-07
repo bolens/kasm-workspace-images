@@ -1,6 +1,6 @@
 # Documentation
 
-Kasm desktop image variants and operator-selected registry delivery.
+Kasm desktop image variants, GHCR publication, and operator-managed workspaces.
 
 ## Start here
 
@@ -22,7 +22,9 @@ operating system. Each Dockerfile owns its base and startup script selection.
 ## Deployment and recovery
 
 [Build and Kasm setup](../README.md) owns operator commands. [RELEASING.md](../RELEASING.md) owns
-validation and publication boundaries. An output tag does not select the base image or prove
+validation, automatic GHCR publication, and operator-managed Harbor/Kasm boundaries. The
+[image workflow](../.github/workflows/images.yml) owns publication triggers and digest promotion.
+An output tag does not select the base image or prove
 compatibility with a Kasm version. Verify a disposable workspace before promoting the image, and
 retain the previous image reference for rollback.
 

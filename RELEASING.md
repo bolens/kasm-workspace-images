@@ -3,8 +3,9 @@
 [Documentation](docs/README.md)
 
 Kasm Workspace Images continuously delivers Dockerfiles and workspace metadata
-from protected `main`. Image publication is a separate authorized operation;
-there are no GitHub version tags.
+from protected `main`. The Workspace images workflow publishes the three variants
+to GHCR when image sources or its workflow change on `main`. A manual run on
+`main` rebuilds all variants. There are no GitHub version tags.
 
 ## Prepare and validate
 
@@ -30,9 +31,13 @@ Do not push `main`, force-push, skip failing hooks, or bypass protection.
 ## Review, publish, and verify
 
 Require a pull request, all checks, resolved conversations, and a squash merge.
-Publishing to a registry requires separate operator authorization. Use an
-immutable content/version tag first, retain its digest, scan the result, and
-verify Kasm metadata before moving any convenience alias.
+Merging an image or publishing-workflow change activates GHCR publication.
+PR builds have read-only permissions; only this repository's main pushes and
+manual main runs receive GHCR credentials. The workflow publishes commit tags with provenance and an SBOM, smoke-tests
+the published digest, and promotes `latest` only after the desktop remains ready.
+It records each digest. Verify the intended desktop interaction before selecting
+it in Kasm. Harbor pushes
+and changes to deployed workspaces remain separate operator actions.
 
 ## Recover
 

@@ -18,6 +18,8 @@ RUN dnf install -y \
 
 # Use GNOME as the desktop (replaces default Openbox)
 COPY root/defaults/startwm.sh /defaults/startwm.sh
-RUN chmod +x /defaults/startwm.sh
+COPY root/custom-services.d/dbus /custom-services.d/dbus
+RUN chmod +x /defaults/startwm.sh /custom-services.d/dbus
 
-USER abc
+# The base s6 init needs root to initialize ownership, then starts the desktop as abc.
+USER root

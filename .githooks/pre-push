@@ -4,7 +4,7 @@ set -euo pipefail
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 hadolint --failure-threshold error -- */Dockerfile
-shellcheck -- */root/defaults/startwm.sh
+shellcheck -- */root/defaults/startwm.sh bazzite/root/custom-services.d/dbus scripts/smoke-image
 for image in archlinux bazzite cachyos; do
   docker buildx build --check --file "$image/Dockerfile" "$image"
 done

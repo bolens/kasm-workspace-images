@@ -38,6 +38,22 @@ The Dockerfiles use the LinuxServer base tags shown in the Images table.
 There is no `KASM_VERSION` build argument. Change the relevant `FROM` declaration
 and validate that build context when selecting a different base.
 
+## GHCR images
+
+The Workspace images workflow builds all three variants on pull requests.
+Changes to image sources on `main`, or a manual run on `main`, publish Linux
+amd64 images:
+
+- `ghcr.io/bolens/kasm-workspace-images/archlinux`
+- `ghcr.io/bolens/kasm-workspace-images/cachyos`
+- `ghcr.io/bolens/kasm-workspace-images/bazzite`
+
+Each image receives a `sha-<full-commit>` tag, source metadata,
+build provenance, and an SBOM. The workflow promotes `latest` only after the
+published digest passes native-audio loading and a desktop-process smoke test. Use the digest recorded in the workflow summary
+when pinning a Kasm workspace. Registry access follows the package visibility
+settings; configure Kasm registry credentials for private packages.
+
 ## Push to Harbor
 
 Build and push images to your [Harbor](https://goharbor.io/) registry so Kasm (or any host) can pull them.
@@ -88,7 +104,31 @@ Build and push images to your [Harbor](https://goharbor.io/) registry so Kasm (o
 
 ## Notes
 
-- **CachyOS**: Uses CachyOS repos for optimized packages; the image is larger and build can take longer.
+The inherited s6 entrypoint starts as container root to initialize permissions
+and services, then runs the desktop as `abc`. Do not override the image user
+with `--user abc`; it prevents `init-adduser` from completing. This does not
+require a privileged container. Fedora starts a supervised, container-local system
+D-Bus for GNOME and selects the X11 session supplied by KasmVNC; it does not
+use the host system bus.
+
+Run `bash scripts/smoke-image IMAGE VARIANT` after a local build. Set
+`CONTAINER_ENGINE=podman` to use Podman. The check creates an isolated container
+with no network or published ports and removes it and its temporary volumes.
+
+- **CachyOS**: Requires an x86-64-v3 CPU on both the builder and Kasm host.
+  The build checks CPU support, installs checksum-pinned keyring and mirrorlist
+  packages, and declares the v3 package architecture. Bootstrap versions and
+  hashes need manual review against the [official mirror](https://mirror.cachyos.org/repo/x86_64/cachyos/);
+  Dependabot monitors the base image and Actions, not these package URLs.
+- **Native audio**: Arch and CachyOS use the checksum-pinned official Node
+  24.20.0 binary for Kasm's existing PulseAudio addon. The distribution's Node
+  upgrade would otherwise change its native-module ABI. Review runtime updates
+  against [Node's release checksums](https://nodejs.org/dist/v24.20.0/SHASUMS256.txt);
+  this download is not covered by Dependabot. Build and smoke checks require
+  the addon to load before an image can be promoted.
+- **Arch signing keys**: Arch and CachyOS refresh their signing keyrings before
+  the full package upgrade and desktop installation. See the
+  [Arch package-signing guidance](https://wiki.archlinux.org/title/Pacman/Package_signing#Upgrade_system_regularly).
 - **Bazzite**: This image is a Fedora-based “gaming-style” workspace (e.g. GNOME, common gaming libs). The real [Bazzite](https://bazzite.com/) OS is an immutable Fedora Atomic distro and is not a drop-in Kasm workspace; this Dockerfile approximates a similar environment inside Kasm.
 - **LinuxServer bases**: Tags like `arch`, `fedora41` track upstream. Check [releases](https://github.com/linuxserver/docker-baseimage-kasmvnc/releases) for current tags.
 
