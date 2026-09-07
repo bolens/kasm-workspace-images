@@ -1,5 +1,7 @@
 # Custom Kasm Workspace Images
 
+[Documentation](docs/README.md)
+
 **Source:** [github.com/bolens/kasm-workspace-images](https://github.com/bolens/kasm-workspace-images)
 
 Custom workspace images for [Kasm Workspaces](https://www.kasmweb.com/) (browser-based desktops). These are built on [LinuxServer baseimage-kasmvnc](https://docs.linuxserver.io/images/docker-baseimage-kasmvnc/), which is compatible with Kasm and provides KasmVNC, audio, and the expected user layout.
@@ -63,6 +65,7 @@ Build and push images to your [Harbor](https://goharbor.io/) registry so Kasm (o
    ```bash
    docker login harbor.example.com
    ```
+
    Use your Harbor username and password (or robot account credentials).
 
 3. **Build and tag for Harbor** (replace `harbor.example.com` and `kasm` with your Harbor host and project):
@@ -132,6 +135,11 @@ with no network or published ports and removes it and its temporary volumes.
 ### Git hooks
 
 Run `bash scripts/install-git-hooks` once per clone. The pre-commit hook runs fast staged checks; pre-push runs the broader local CI gate.
+
+## License scope and attribution
+
+See [third-party notices](THIRD_PARTY_NOTICES.md) for the project license scope,
+retained upstream notices, and dependency or asset exceptions.
 
 ## Devcontainer
 

@@ -1,5 +1,7 @@
 # Image delivery playbook
 
+[Documentation](docs/README.md)
+
 Kasm Workspace Images continuously delivers Dockerfiles and workspace metadata
 from protected `main`. The Workspace images workflow publishes the three variants
 to GHCR when image sources or its workflow change on `main`. A manual run on
