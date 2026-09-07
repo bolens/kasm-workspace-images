@@ -136,6 +136,11 @@ with no network or published ports and removes it and its temporary volumes.
 
 Run `bash scripts/install-git-hooks` once per clone. The pre-commit hook runs fast staged checks; pre-push runs the broader local CI gate.
 
+## License scope and attribution
+
+See [third-party notices](THIRD_PARTY_NOTICES.md) for the project license scope,
+retained upstream notices, and dependency or asset exceptions.
+
 ## Devcontainer
 
 See [the devcontainer guide](.devcontainer/README.md) for the repository toolchain,
