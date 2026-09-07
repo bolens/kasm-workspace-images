@@ -135,3 +135,8 @@ with no network or published ports and removes it and its temporary volumes.
 ### Git hooks
 
 Run `bash scripts/install-git-hooks` once per clone. The pre-commit hook runs fast staged checks; pre-push runs the broader local CI gate.
+
+## Devcontainer
+
+See [the devcontainer guide](.devcontainer/README.md) for the repository toolchain,
+setup, checks and platform limits.
