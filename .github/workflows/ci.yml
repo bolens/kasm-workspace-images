@@ -13,6 +13,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  editor:
+    name: Editor devcontainer
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and smoke-test the editor devcontainer
+        run: |
+          set -euo pipefail
+          image="localhost/kasm-editor:${GITHUB_SHA}"
+          trap 'docker image rm "$image" >/dev/null' EXIT
+          docker build --tag "$image" --file .devcontainer/Dockerfile .devcontainer
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --pids-limit 128 --memory 512m \
+            --cpus 1 --user "$(id -u):$(id -g)" --tmpfs /tmp:rw,size=64m \
+            --env HOME=/tmp/editor-home \
+            --mount "type=bind,source=${GITHUB_WORKSPACE},target=/workspace" \
+            --workdir /workspace "$image" bash .devcontainer/post-create.sh
+
   hadolint:
     name: hadolint (${{ matrix.image }})
     runs-on: ubuntu-latest
