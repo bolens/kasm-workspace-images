@@ -9,3 +9,5 @@ Installation validation alone does not establish feature completion.
 
 [Workspace image publication](002-ghcr-images/spec.md) defines GHCR events,
 variants, and tags. See its [tasks](002-ghcr-images/tasks.md) for validation.
+
+- [Portable Woodpecker validation](003-woodpecker-validation/spec.md) - planned native CI transition.

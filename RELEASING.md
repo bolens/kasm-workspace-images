@@ -47,3 +47,11 @@ publish a corrected immutable tag. Revoke and rebuild if a secret reached any
 layer.
 
 Fleet policy: <https://github.com/bolens/.github/blob/main/RELEASING.md>.
+
+## Woodpecker validation
+
+[The transition contract](docs/woodpecker-transition.md) adds portable Linux
+checks alongside existing host validation. Require actual native PR and main
+success before retiring duplicates. Existing platform, security, packaging and
+publishing authorities remain in place. No new tag or product release is part
+of this CI change.
