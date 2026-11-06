@@ -53,5 +53,6 @@ Fleet policy: <https://github.com/bolens/.github/blob/main/RELEASING.md>.
 [The transition contract](docs/woodpecker-transition.md) adds portable Linux
 checks alongside existing host validation. Require actual native PR and main
 success before retiring duplicates. Existing platform, security, packaging and
-publishing authorities remain in place. No new tag or product release is part
-of this CI change.
+publishing authorities remain in place. This CI change creates no source Git tag
+or product version bump. Normal main-branch image publication continues when
+image sources or the publishing workflow change.
