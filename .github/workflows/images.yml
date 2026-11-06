@@ -89,7 +89,8 @@ jobs:
             org.opencontainers.image.source=https://github.com/bolens/kasm-workspace-images
             org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha,scope=workspace-${{ matrix.image }}
-          cache-to: type=gha,mode=max,scope=workspace-${{ matrix.image }}
+          # Cache upload is optional; image build, push and desktop smoke remain gates.
+          cache-to: type=gha,mode=max,scope=workspace-${{ matrix.image }},ignore-error=true
           provenance: mode=max
           sbom: true
       - name: Verify published desktop and promote latest
