@@ -109,7 +109,9 @@ and services, then runs the desktop as `abc`. Do not override the image user
 with `--user abc`; it prevents `init-adduser` from completing. This does not
 require a privileged container. Fedora starts a supervised, container-local system
 D-Bus for GNOME and selects the X11 session supplied by KasmVNC; it does not
-use the host system bus.
+use the host system bus. The Fedora image removes the empty systemd seat marker
+left by package installation so GNOME selects its supported non-systemd login
+backend, and removes build-time root caches before `abc` creates its own.
 
 Run `bash scripts/smoke-image IMAGE VARIANT` after a local build. Set
 `CONTAINER_ENGINE=podman` to use Podman. The check creates an isolated container

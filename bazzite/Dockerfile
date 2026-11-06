@@ -16,6 +16,12 @@ RUN dnf install -y \
     ffmpeg \
     && dnf clean all
 
+# Package installation can leave systemd's empty seat marker and root-owned
+# desktop caches. This image boots s6; GNOME must select its non-systemd backend,
+# and abc must create its own cache after the base initializes /config.
+RUN if [ -d /run/systemd/seats ]; then rmdir /run/systemd/seats; fi \
+    && rm -rf /config/.cache
+
 # Use GNOME as the desktop (replaces default Openbox)
 COPY root/defaults/startwm.sh /defaults/startwm.sh
 COPY root/custom-services.d/dbus /custom-services.d/dbus
