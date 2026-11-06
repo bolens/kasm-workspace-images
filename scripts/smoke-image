@@ -33,6 +33,10 @@ while ((SECONDS < deadline)); do
   fi
   sleep 1
 done
-"$engine" logs --tail 100 "$container" >&2
+# Preserve the first compositor failure as well as later service diagnostics.
+# This container has no injected credentials, host mounts, or network access.
+"$engine" inspect --format '{{json .State}}' "$container" >&2 || true
+"$engine" exec "$container" sh -c 'id abc; stat -c "%u:%g %a %n" /config /config/.cache /run/user/911 2>/dev/null; ps -eo user,pid,ppid,comm' >&2 || true
+"$engine" logs "$container" >&2 || true
 echo "Workspace desktop did not remain ready: $desktop" >&2
 exit 1
