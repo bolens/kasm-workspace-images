@@ -56,3 +56,11 @@ success before retiring duplicates. Existing platform, security, packaging and
 publishing authorities remain in place. This CI change creates no source Git tag
 or product version bump. Normal main-branch image publication continues when
 image sources or the publishing workflow change.
+
+The native `workflow-policy` group calls
+`bash scripts/ci/check-workflow-policy.sh` for checksum-verified actionlint
+1.7.12 and offline zizmor 1.29.0 at medium severity/confidence. Keep the hosted
+Workflow lint workflow during exact-head PR and genuine-main verification. The
+[CI index](docs/woodpecker-transition.md#ci-organization) preserves the separate
+normal pre-push Buildx checks, full image builds, desktop smoke tests and GHCR
+publication authority. Static policy success does not replace those checks.
