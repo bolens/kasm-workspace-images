@@ -2,6 +2,26 @@
 
 Validate all three maintained Dockerfiles with the same pinned Hadolint image as GitHub, then lint startup scripts with ShellCheck.
 
+## CI organization
+
+The [shared purpose phases](https://github.com/bolens/.github/blob/main/docs/woodpecker-transition.md#ci-organization)
+map the existing checks and image owners. Keep the three variant contexts
+`archlinux`, `bazzite` and `cachyos` explicit when reproducing an image check.
+
+| Phase | Check group / canonical local command | Native workflow / step | Retained hosted owner / boundary |
+| --- | --- | --- | --- |
+| `validate` | Dockerfile lint: `hadolint --failure-threshold error -- */Dockerfile` | `woodpecker` / `dockerfiles` | PR, main push and native manual validation; fixed maintained file scope |
+| `validate` | Startup scripts: `shellcheck -- */root/defaults/startwm.sh bazzite/root/custom-services.d/dbus scripts/smoke-image` | `woodpecker` / `startup-scripts` | Static shell checks, without starting a workspace |
+| `validate` | Workflow policy: `bash scripts/ci/check-workflow-policy.sh` | `woodpecker` / `workflow-policy` | actionlint 1.7.12 and offline zizmor 1.29.0; hosted Workflow lint remains during native verification |
+| `test` | Buildx checks: `docker buildx build --check --file archlinux/Dockerfile archlinux`, repeated for `bazzite` and `cachyos` | Separate from native lint | Existing pre-push hook requires a builder; hosted Workspace images performs real builds |
+| `test` | Desktop startup: `bash scripts/smoke-image IMAGE VARIANT` after building the selected image | Separate from native lint | Hosted Workspace images checks the Node ABI and desktop readiness in disposable network-isolated containers |
+| `publish` | Existing image procedure in [RELEASING](../RELEASING.md) | Publication stays with its existing owner | Trusted main pushes for image/workflow changes or manual main runs publish GHCR digests and promote aliases after smoke checks; PR builds remain read-only |
+
+`IMAGE` is the built image reference and `VARIANT` is one of the three names
+above. Registry publication and deployed Kasm changes retain their separate
+authorization. The existing native identity and hosted release dependencies
+remain stable.
+
 The pipeline runs on pull requests and main pushes with immutable clone/runtime
 images. It has no host mounts, Docker socket, privileged mode or publishing
 secrets. Package installation is confined to the disposable job container.
@@ -17,3 +37,12 @@ corrective PR without changing live profiles or installations.
 Review image digests monthly and after security releases. Existing Dockerfile
 updaters do not monitor these Woodpecker YAML references. Direct tool pins and
 image updates require a reviewed PR and successful native execution.
+
+The workflow-policy group matches the retained shared actionlint workflow: version
+1.7.12 with its recorded SHA-256 archive checksum, and zizmor 1.29.0 with offline
+audits at medium severity and confidence. Local reproduction requires Git, curl,
+Python 3 with venv support and ShellCheck; downloaded tools use a disposable
+temporary directory. Apt installation belongs only to the CI container step.
+The new group validates workflow source; it does not execute Buildx, start a
+workspace, push an image, or replace the retained image/publishing requirements.
+Require actual native PR and genuine-main proof before retiring Workflow lint.

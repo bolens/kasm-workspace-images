@@ -22,3 +22,12 @@ steps:
       - apt-get update
       - apt-get install -y --no-install-recommends shellcheck
       - shellcheck -- */root/defaults/startwm.sh bazzite/root/custom-services.d/dbus scripts/smoke-image
+
+  - name: workflow-policy
+    image: docker.io/library/python:3.14-slim-trixie@sha256:af8a5aa14780025dbfbcfbc81bd8a91ebd87711dd5b0f48ed71090949dd7cb1d
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+    commands:
+      - apt-get update
+      - apt-get install -y --no-install-recommends ca-certificates curl git shellcheck
+      - bash scripts/ci/check-workflow-policy.sh
