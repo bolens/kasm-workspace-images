@@ -59,8 +59,25 @@ image sources or the publishing workflow change.
 
 The native `workflow-policy` group calls
 `bash scripts/ci/check-workflow-policy.sh` for checksum-verified actionlint
-1.7.12 and offline zizmor 1.29.0 at medium severity/confidence. Keep the hosted
-Workflow lint workflow during exact-head PR and genuine-main verification. The
+1.7.12 and offline zizmor 1.29.0 at medium severity/confidence. Workflow lint now retains only scheduled/manual execution after exact-head PR and genuine-main verification. The
 [CI index](docs/woodpecker-transition.md#ci-organization) preserves the separate
 normal pre-push Buildx checks, full image builds, desktop smoke tests and GHCR
 publication authority. Static policy success does not replace those checks.
+
+## Managed integration validation
+
+`bash scripts/ci/check-spec-kit.sh` verifies the current Spec Kit manifests and
+managed files without updating them. The existing native repository-policy
+command, `bash scripts/ci/check-workflow-policy.sh`, includes this check in its existing
+container and status context. It downloads only the public validator at
+`bolens/.github@c161a6757130ea687def9eb1e81c6a4190488f07`, verifies its
+SHA-256, limits the download to 64 KiB and 60 seconds, and bounds validation to
+four minutes. Local reproduction needs Bash and Python 3 on Linux/macOS with
+HTTPS access. It uses temporary files and requires no secrets or installed skill links.
+
+Source/workflow policy now runs in Woodpecker; duplicate GitHub policy workflows
+retain scheduled/manual execution after their verified cutover. The mixed
+Spec Kit workflow still runs its hosted read-only PR/push validation while this
+native integration is qualified on actual PR and genuine-main revisions. Its
+scheduled/manual updater remains on GitHub. Preserve all current check names and
+publication/platform boundaries during that qualification.
