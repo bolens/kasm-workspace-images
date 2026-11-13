@@ -59,7 +59,7 @@ image sources or the publishing workflow change.
 
 The native `workflow-policy` group calls
 `bash scripts/ci/check-workflow-policy.sh` for checksum-verified actionlint
-1.7.12 and offline zizmor 1.29.0 at medium severity/confidence. Workflow lint now retains only scheduled/manual execution after exact-head PR and genuine-main verification. The
+1.7.12 and offline zizmor 1.29.0 at medium severity/confidence. The duplicate hosted Workflow lint workflow is disabled after exact-head PR and genuine-main verification. Its tracked source remains available for rollback. The
 [CI index](docs/woodpecker-transition.md#ci-organization) preserves the separate
 normal pre-push Buildx checks, full image builds, desktop smoke tests and GHCR
 publication authority. Static policy success does not replace those checks.
@@ -75,8 +75,9 @@ SHA-256, limits the download to 64 KiB and 60 seconds, and bounds validation to
 four minutes. Local reproduction needs Bash and Python 3 on Linux/macOS with
 HTTPS access. It uses temporary files and requires no secrets or installed skill links.
 
-Source/workflow policy now runs in Woodpecker; duplicate GitHub policy workflows
-retain scheduled/manual execution after their verified cutover. The mixed
+Source/workflow policy now runs in Woodpecker. Duplicate GitHub policy workflows
+are disabled, including manual and scheduled execution, after verified cutover.
+Their tracked source remains available for rollback. The mixed
 Spec Kit workflow still runs its hosted read-only PR/push validation while this
 native integration is qualified on actual PR and genuine-main revisions. Its
 scheduled/manual updater remains on GitHub. Preserve all current check names and
